@@ -11,7 +11,7 @@ class Player(BaseObject):
         pass
 
     def move_left(self, x):
-        self.x -= x
+        self.move(-x, 0)
 
     def move_right(self, x):
-        self.x += x
+        self.move(x, 0)

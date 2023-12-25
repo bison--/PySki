@@ -51,7 +51,8 @@ class Game:
                 "font": "MS Comic Sans",
                 "fontSize": 30,
                 "color": (0, 0, 255),
-                "text": "Restart"},
+                "text": "Restart"
+            },
         ])
 
     def process_player_input(self):
@@ -62,6 +63,13 @@ class Game:
             self.player_object.move_left(1)
         elif self.__current_frame_keys_down[pygame.K_RIGHT]:
             self.player_object.move_right(1)
+
+        if self.__current_frame_keys_down[pygame.K_DOWN]:
+            self.speed += 1
+        elif self.__current_frame_keys_down[pygame.K_UP]:
+            self.speed -= 1
+            if self.speed < 1:
+                self.speed = 1
 
     def spawn_objects(self):
         lowest_object_position = 0
@@ -112,13 +120,6 @@ class Game:
                             # print("selected item:", self.iUi.getSelectedItem())
 
             self.__current_frame_keys_down = pygame.key.get_pressed()
-
-            if self.__current_frame_keys_down[pygame.K_DOWN]:
-                self.speed += 1
-            elif self.__current_frame_keys_down[pygame.K_UP]:
-                self.speed -= 1
-                if self.speed < 1:
-                    self.speed = 1
 
             move_vertical_speed = self.clock.get_time()
 
