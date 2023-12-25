@@ -6,8 +6,8 @@ from objects.BaseObject import BaseObject
 class StaticRandomObstacle(BaseObject):
     def __init__(self, x, y):
         sprites = [
-            r'images\102_16.png',  # tree
-            r'images\606_16.png',  # rock
+            r'images\pine_trees.png',  # tree
+            r'images\rocks.png',  # rock
         ]
 
         random_sprites = random.choices(

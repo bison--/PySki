@@ -117,7 +117,7 @@ class Ui:
         if self._selectedMenu in self.menus and self._selectedMenuItemIndex >= 0:
             return self.menus[self._selectedMenu][self._selectedMenuItemIndex]
 
-        print("WARNING! NO SELECTED MENU ITEM FOUND!")
+        # print("WARNING! NO SELECTED MENU ITEM FOUND!")
         return None
 
     def draw(self, menuKey=''):
