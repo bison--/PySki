@@ -24,6 +24,9 @@ class BaseObject:
     def draw(self, surface):
         surface.blit(self.image, (self.x, self.y))
 
+    def get_rect(self):
+        return pygame.Rect(self.x, self.y, self.width, self.height)
+
     def check_collision(self, other: pygame.Rect):
         return pygame.Rect(self.x, self.y, self.width, self.height).colliderect(
             pygame.Rect(other.x, other.y, other.width, other.height)
