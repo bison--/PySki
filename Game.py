@@ -1,8 +1,7 @@
 import pygame
 import random
 from Ui import Ui
-from objects.Tree import Tree
-from objects.Rock import Rock
+from objects.StaticRandomObstacle import StaticRandomObstacle
 from objects.Player import Player
 import config
 
@@ -80,23 +79,32 @@ class Game:
         if lowest_object_position >= config.HEIGHT - 16:
             return
 
-        self.all_objects.append(
-            random.choice([Rock, Tree])(random.randint(0, config.WIDTH - 16), config.HEIGHT)
-        )
+        #self.all_objects.append(
+        #    random.choice([Rock, Tree])(random.randint(0, config.WIDTH - 16), config.HEIGHT)
+        #)
+
+        x = random.randint(0, config.WIDTH - 16)
+        self.all_objects.append(StaticRandomObstacle(x, config.HEIGHT))
 
     def run(self):
         self.all_objects += [
-            Tree(0, 0),
-            Tree(10, 10),
-            Rock(20, 20),
-            Tree(100, 100),
+            StaticRandomObstacle(0, 0),
+            StaticRandomObstacle(10, 10),
+            StaticRandomObstacle(20, 20),
+            StaticRandomObstacle(100, 100),
         ]
+
+        to_move_cache = 0
 
         # Main loop
         keep_running = True
         while keep_running:
             self.clock.tick(60)
             self.spawn_objects()
+
+            to_move_delta = to_move_cache + (self.speed / self.clock.get_time())
+            to_move_cache = to_move_delta % 1
+            to_move = int(to_move_delta)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -120,16 +128,14 @@ class Game:
                             # print("selected item:", self.iUi.getSelectedItem())
 
             self.__current_frame_keys_down = pygame.key.get_pressed()
-
-            move_vertical_speed = self.clock.get_time()
-
             self.process_player_input()
+
             self.original_surface.fill((255, 255, 255))
 
             for i in range(len(self.all_objects) - 1, -1, -1):
                 obj = self.all_objects[i]
                 if not self.game_over:
-                    obj.move_up(self.speed / move_vertical_speed)
+                    obj.move_up(to_move)
 
                 if obj.can_be_removed():
                     self.all_objects.pop(i)
