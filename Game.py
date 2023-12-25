@@ -1,6 +1,7 @@
 import pygame
 import random
 from Ui import Ui
+from objects.BaseObject import BaseObject
 from objects.StaticRandomObstacle import StaticRandomObstacle
 from objects.Player import Player
 import config
@@ -12,7 +13,7 @@ class Game:
     def __init__(self):
         self.speed = 1
         self.game_over = False
-        self.all_objects = []
+        self.all_objects: list[BaseObject] = []
         self.__current_frame_keys_down = {}
 
         # Initialize pygame
@@ -78,10 +79,6 @@ class Game:
 
         if lowest_object_position >= config.HEIGHT - 16:
             return
-
-        #self.all_objects.append(
-        #    random.choice([Rock, Tree])(random.randint(0, config.WIDTH - 16), config.HEIGHT)
-        #)
 
         x = random.randint(0, config.WIDTH - 16)
         self.all_objects.append(StaticRandomObstacle(x, config.HEIGHT))
