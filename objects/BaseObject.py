@@ -18,6 +18,13 @@ class BaseObject:
         self.width = self.image.get_width()
         self.height = self.image.get_height()
 
+    def set_image(self, _image_filename):
+        self.image_filename = _image_filename
+        self.image: pygame.Surface = self.load_image()
+        self.collision_mask: pygame.mask.Mask = self.load_image_mask()
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+
     def load_image(self):
         if self.image_filename not in BaseObject.global_image_cache:
             BaseObject.global_image_cache[self.image_filename] = pygame.image.load(self.image_filename)
