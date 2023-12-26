@@ -5,6 +5,12 @@ import pygame
 
 
 class Ui:
+    INTERACTION_UP = 1
+    INTERACTION_RIGHT = 2
+    INTERACTION_DOWN = 3
+    INTERACTION_LEFT = 4
+    INTERACTION_SELECT = 5
+
     font_cache = {}
 
     def __init__(self, screen):
@@ -12,7 +18,12 @@ class Ui:
         # the main screen, result from:
         # pygame.display.set_mode(...)
         self._screen = screen
-        self.keymap = {pygame.K_UP: 1, pygame.K_RIGHT: 2, pygame.K_DOWN: 3, pygame.K_LEFT: 4}  # pygame.K_RETURN:5}
+        self.keymap = {
+            pygame.K_UP: Ui.INTERACTION_UP,
+            pygame.K_RIGHT: Ui.INTERACTION_RIGHT,
+            pygame.K_DOWN: Ui.INTERACTION_DOWN,
+            pygame.K_LEFT: Ui.INTERACTION_LEFT,
+        }  # pygame.K_RETURN:5}
         self.selectedColor = (245, 101, 44)  # orange ;)
         self.nextAction = None
         self.antialias = True
@@ -41,6 +52,12 @@ class Ui:
             self.nextAction = None
 
         return canInteract
+
+    def getInteraction(self, eventKey):
+        if eventKey in self.keymap:
+            return self.keymap[eventKey]
+        else:
+            return None
 
     def addMenu(self, menuKey, menuRows):
         """ add a menu

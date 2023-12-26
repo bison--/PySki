@@ -70,6 +70,11 @@ class Game:
     def create_menu(self):
         self.iUi.antialias = config.ANTI_ALIAS
 
+        # bind keys to action ID's
+        self.iUi.keymap[pygame.K_RETURN] = Ui.INTERACTION_SELECT
+        self.iUi.keymap[pygame.K_SPACE] = Ui.INTERACTION_SELECT
+        self.iUi.keymap[pygame.K_KP_ENTER] = Ui.INTERACTION_SELECT
+
         self.iUi.addMenu(Game.MENU_GAME_OVER, [
             {
                 'rowName': 'title',
@@ -205,12 +210,9 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.game_over = True
 
+                    # UI caught the key
                     if self.iUi.interaction(event.key):
-                        # print("UI catched this key:", event.key)
-                        pass
-                    else:
-                        # print("no UI catch, key pressed:", event.key)
-                        if pygame.K_RETURN == event.key or pygame.K_SPACE == event.key or pygame.K_KP_ENTER == event.key:
+                        if self.iUi.getInteraction(event.key) == Ui.INTERACTION_SELECT:
                             selected_menu_item = self.iUi.getSelectedItem()
                             if selected_menu_item is not None and 'action' in selected_menu_item:
                                 selected_menu_item['action']()
