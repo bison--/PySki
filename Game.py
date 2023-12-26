@@ -5,6 +5,7 @@ import pygame
 from Ui import Ui
 from objects.BaseObject import BaseObject
 from objects.StaticRandomObstacle import StaticRandomObstacle
+from objects.StaticObstacle import StaticObstacle
 from objects.Player import Player
 import config_loader as config
 
@@ -44,6 +45,7 @@ class Game:
 
     def start_game(self):
         self.speed = 1
+        self.distance_traveled = 0
         self.set_player_centered()
 
         self.all_objects = [
@@ -52,6 +54,7 @@ class Game:
             StaticRandomObstacle(10, 10),
             StaticRandomObstacle(20, 20),
             StaticRandomObstacle(100, 100),
+            StaticObstacle(config.WIDTH / 2, 100, 'christmas_tree.png'),
         ]
 
     def set_player_centered(self):
@@ -110,6 +113,11 @@ class Game:
             self.player_object.move_left(1)
         elif self.__current_frame_keys_down[pygame.K_RIGHT]:
             self.player_object.move_right(1)
+
+        if self.player_object.x < 0:
+            self.player_object.x = 0
+        elif self.player_object.x > config.WIDTH - self.player_object.width:
+            self.player_object.x = config.WIDTH - self.player_object.width
 
         if self.__current_frame_keys_down[pygame.K_DOWN]:
             self.speed += 1
@@ -183,8 +191,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.menu_action_exit()
+
                 elif event.type == pygame.VIDEORESIZE:
                     self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.game_over = True
