@@ -16,6 +16,7 @@ class Game:
         self.keep_running = True
         self.game_over = False
         self.speed = 1
+        self.distance_traveled = 0
 
         self.all_objects: list[BaseObject] = []
         self.__current_frame_keys_down = {}
@@ -27,14 +28,13 @@ class Game:
         # Set the FPS
         self.clock = pygame.time.Clock()
 
-        # Create a window of the size of the image
-        self.screen = pygame.display.set_mode((config.WIDTH, config.HEIGHT), pygame.RESIZABLE)
+        # Set the window title
         pygame.display.set_caption('PySki')
 
         # Translate the image data to a pygame surface
         self.original_surface = pygame.Surface((config.WIDTH, config.HEIGHT))
 
-        # make it bigger from the start
+        # Make the drawn screen bigger from the start
         self.screen = pygame.display.set_mode((config.LAUNCH_WIDTH, config.LAUNCH_HEIGHT), pygame.RESIZABLE)
 
         self.player_object = Player(0, 0)
@@ -128,6 +128,11 @@ class Game:
         x = random.randint(0, config.WIDTH - 16)
         self.all_objects.append(StaticRandomObstacle(x, config.HEIGHT))
 
+    def draw_distance(self):
+        font = pygame.font.Font(config.FONT_NAME, 12)
+        text = font.render("Distance: " + str(self.distance_traveled), True, (100, 100, 100))
+        self.original_surface.blit(text, (0, 0))
+
     def run(self):
         self.start_game()
 
@@ -138,9 +143,12 @@ class Game:
             self.clock.tick(config.MAX_FPS)
             self.spawn_objects()
 
-            to_move_delta = to_move_cache + (self.speed / self.clock.get_time())
-            to_move_cache = to_move_delta % 1
-            to_move = int(to_move_delta)
+            to_move = 0
+            if not self.game_over:
+                to_move_delta = to_move_cache + (self.speed / self.clock.get_time())
+                to_move_cache = to_move_delta % 1
+                to_move = int(to_move_delta)
+                self.distance_traveled += to_move
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -185,6 +193,8 @@ class Game:
 
             if self.game_over:
                 self.iUi.draw(Game.MENU_GAME_OVER)
+
+            self.draw_distance()
 
             # Scale the surface to fit the window size
             scaled_surface = pygame.transform.scale(self.original_surface, self.screen.get_size())
