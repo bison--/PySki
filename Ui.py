@@ -1,14 +1,12 @@
+import sys
 import pygame
 
-try:
-    import pygame_sdl2 as pygame
-except ImportError:
-    print("pygame_sdl2 not found; falling back to pygame.")
-    import pygame
-import sys
+# original: https://github.com/pythonfoo/pySnake/blob/master/ui.py
 
 
 class Ui:
+    font_cache = {}
+
     def __init__(self, screen):
 
         # the main screen, result from:
@@ -120,6 +118,44 @@ class Ui:
         # print("WARNING! NO SELECTED MENU ITEM FOUND!")
         return None
 
+    def tryLoadFont(self, font_name, font_size):
+        cacheName = font_name + str(font_size)
+
+        if cacheName in Ui.font_cache:
+            return Ui.font_cache[cacheName]
+
+        try:
+            Ui.font_cache[cacheName] = pygame.font.Font(font_name, font_size)
+        except Exception as ex:
+            print("WARNING! Font '" + font_name + "' not found, using default font.", ex)
+            Ui.font_cache[cacheName] = pygame.font.SysFont(font_name, font_size)
+
+        return Ui.font_cache[cacheName]
+
+    def __getMenuRowRealFontSizes(self, menuRow):
+        fnt = self.tryLoadFont(menuRow["font"], menuRow["fontSize"])
+        return fnt.size(menuRow["text"])
+
+    def __getPreviousMenuRowsRealFontHeight(self, menuRows, currentIndex):
+        accumulated = 0
+        for i in range(len(menuRows)):
+            if currentIndex == i:
+                break
+
+            accumulated += self.__getMenuRowRealFontSizes(menuRows[i - 1])[1]
+
+        return accumulated
+
+    def __getPreviousMenuRowRealFontHeight(self, menuRows, currentIndex):
+        if currentIndex == 0:
+            return 0
+
+        for i in range(len(menuRows)):
+            if i == currentIndex:
+                return self.__getMenuRowRealFontSizes(menuRows[i - 1])[1]
+
+        return 0
+
     def draw(self, menuKey=''):
         if menuKey in self.menus:
             self._selectedMenu = menuKey
@@ -134,21 +170,28 @@ class Ui:
         if self._selectedMenuItemIndex == -1:
             self.selectMenuItem(0)
 
+        heightCenter = self._screen.get_height() / 2 - self.__getPreviousMenuRowsRealFontHeight(menuToDraw, len(menuToDraw)) / 2
+        yPos = heightCenter
+
         if menuToDraw is not None:
             # print fnt.size(resultText)
             menuRowsCount = len(menuToDraw)
             for i in range(menuRowsCount):
-                fontSize = menuToDraw[i]["fontSize"]
-                fnt = pygame.font.SysFont(menuToDraw[i]["font"], fontSize)
+                previous_rows_font_height = self.__getPreviousMenuRowRealFontHeight(menuToDraw, i)
                 xPos = (self._screen.get_width() / 2)
-                yPos = (self._screen.get_height() / 30) * menuRowsCount
+                yPos += previous_rows_font_height
+
+                fontSize = menuToDraw[i]["fontSize"]
+                fnt = self.tryLoadFont(menuToDraw[i]["font"], fontSize)
                 txt = menuToDraw[i]["text"]
+
+                font_width, font_height = fnt.size(txt)
 
                 color = menuToDraw[i]["color"]
                 if i == self._selectedMenuItemIndex:
                     color = self.selectedColor
 
-                self._screen.blit(fnt.render(txt, 1, color), (xPos - (fnt.size(txt)[0] / 2), yPos + (i * fontSize)))
+                self._screen.blit(fnt.render(txt, 1, color), (xPos - (font_width / 2), yPos))
         else:
             raise Exception("Error menu '" + menuKey + "' does not exist")
 
@@ -172,8 +215,7 @@ if __name__ == "__main__":
          "text": "QUIT"},
         {"rowName": "notes", "selectable": False, "font": "MS Comic Sans", "fontSize": 30, "color": (123, 55, 255),
          "text": "sometext"},
-    ]
-                )
+    ])
 
     while True:
         # Limit frame speed to 50 FPS
