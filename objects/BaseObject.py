@@ -5,6 +5,7 @@ import pygame
 
 class BaseObject:
     global_image_cache = {}
+    global_image_mask_cache = {}
 
     def __init__(self, x, y, image_filename):
         self.x = x
@@ -12,7 +13,7 @@ class BaseObject:
         self.image_filename = image_filename
 
         self.image: pygame.Surface = self.load_image()
-        self.collision_mask: pygame.mask.Mask = pygame.mask.from_surface(self.image)
+        self.collision_mask: pygame.mask.Mask = self.load_image_mask()
 
         self.width = self.image.get_width()
         self.height = self.image.get_height()
@@ -22,6 +23,14 @@ class BaseObject:
             BaseObject.global_image_cache[self.image_filename] = pygame.image.load(self.image_filename)
 
         return BaseObject.global_image_cache[self.image_filename]
+
+    def load_image_mask(self):
+        if self.image_filename not in BaseObject.global_image_mask_cache:
+            BaseObject.global_image_mask_cache[self.image_filename] = pygame.mask.from_surface(
+                BaseObject.global_image_cache[self.image_filename]
+            )
+
+        return BaseObject.global_image_mask_cache[self.image_filename]
 
     def draw(self, surface):
         surface.blit(self.image, (self.x, self.y))

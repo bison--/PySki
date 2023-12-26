@@ -38,6 +38,9 @@ class Game:
         # Make the drawn screen bigger from the start
         self.screen = pygame.display.set_mode((config.LAUNCH_WIDTH, config.LAUNCH_HEIGHT), pygame.RESIZABLE)
 
+        self.ui_font_distance = pygame.font.Font(config.FONT_NAME, 16)
+        self.ui_font_fps = pygame.font.Font(config.FONT_NAME, 8)
+
         self.player_object = Player(0, 0)
 
         self.iUi = Ui(self.original_surface)
@@ -59,7 +62,8 @@ class Game:
 
     def set_player_centered(self):
         self.player_object.set_position(
-            config.WIDTH / 2 - 8, 20
+            (config.WIDTH / 2) - (self.player_object.width / 2),
+            self.player_object.height + 10
         )
 
     def create_menu(self):
@@ -142,14 +146,12 @@ class Game:
         self.all_objects.append(StaticRandomObstacle(x, config.HEIGHT))
 
     def draw_ui(self):
-        font = pygame.font.Font(config.FONT_NAME, 16)
-        text = font.render('Distance: ' + str(self.distance_traveled), config.ANTI_ALIAS, (100, 100, 100))
+        text = self.ui_font_distance.render('Distance: ' + str(self.distance_traveled), config.ANTI_ALIAS, (100, 100, 100))
         self.original_surface.blit(text, (0, 0))
 
-        font = pygame.font.Font(config.FONT_NAME, 8)
         fps_text = 'FPS: ' + str(int(self.clock.get_fps()))
-        text = font.render(fps_text, config.ANTI_ALIAS, (100, 100, 100))
-        _, text_height = font.size(fps_text)
+        text = self.ui_font_fps.render(fps_text, config.ANTI_ALIAS, (100, 100, 100))
+        _, text_height = self.ui_font_fps.size(fps_text)
         self.original_surface.blit(text, (0, config.HEIGHT - text_height))
 
     def move_objects(self, to_move):
