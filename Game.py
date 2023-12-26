@@ -6,6 +6,7 @@ from Ui import Ui
 from objects.BaseObject import BaseObject
 from objects.StaticRandomObstacle import StaticRandomObstacle
 from objects.StaticObstacle import StaticObstacle
+from objects.Trail import Trail
 from objects.Player import Player
 import config_loader as config
 
@@ -167,6 +168,9 @@ class Game:
                 self.all_objects.pop(i)
                 continue
 
+        new_trail = Trail(self.player_object.x, self.player_object.y)
+        self.all_objects.insert(0, new_trail)
+
     def draw_objects(self):
         for obj in self.all_objects:
             obj.draw(self.original_surface)
@@ -176,7 +180,7 @@ class Game:
             return
 
         for obj in self.all_objects:
-            if obj.check_pixel_collision(self.player_object):
+            if obj.kills_player and obj.check_pixel_collision(self.player_object):
                 self.game_over = True
                 return
 

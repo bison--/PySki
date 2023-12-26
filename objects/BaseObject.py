@@ -8,6 +8,8 @@ class BaseObject:
     global_image_mask_cache = {}
 
     def __init__(self, x, y, image_filename):
+        self.kills_player = False
+
         self.x = x
         self.y = y
         self.image_filename = image_filename

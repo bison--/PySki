@@ -19,3 +19,5 @@ class StaticObstacle(BaseObject):
             super().__init__(x, y, os.path.join('images', selected_sprite))
         else:
             raise Exception('Invalid sprite type')
+
+        self.kills_player = True
