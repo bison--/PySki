@@ -32,6 +32,10 @@ class BaseObject:
             pygame.Rect(other.x, other.y, other.width, other.height)
         )
 
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
+
     def move(self, x, y):
         self.x += x
         self.y += y

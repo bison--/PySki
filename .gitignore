@@ -266,3 +266,4 @@ pyrightconfig.json
 # my
 
 images_raw/
+config_local.py

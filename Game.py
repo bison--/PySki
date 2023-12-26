@@ -1,22 +1,27 @@
-import pygame
+import os
 import random
+import pygame
+
 from Ui import Ui
 from objects.BaseObject import BaseObject
 from objects.StaticRandomObstacle import StaticRandomObstacle
 from objects.Player import Player
-import config
+import config_loader as config
 
 
 class Game:
     MENU_GAME_OVER = "game_over"
 
     def __init__(self):
-        self.speed = 1
+        self.keep_running = True
         self.game_over = False
+        self.speed = 1
+
         self.all_objects: list[BaseObject] = []
         self.__current_frame_keys_down = {}
 
         # Initialize pygame
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
         pygame.init()
 
         # Set the FPS
@@ -32,28 +37,68 @@ class Game:
         # make it bigger from the start
         self.screen = pygame.display.set_mode((config.LAUNCH_WIDTH, config.LAUNCH_HEIGHT), pygame.RESIZABLE)
 
-        self.player_object = Player(config.WIDTH / 2 - 8, 20)
-        self.all_objects.append(self.player_object)
+        self.player_object = Player(0, 0)
 
         self.iUi = Ui(self.original_surface)
+        self.create_menu()
+
+    def start_game(self):
+        self.speed = 1
+        self.set_player_centered()
+
+        self.all_objects = [
+            self.player_object,
+            StaticRandomObstacle(0, 0),
+            StaticRandomObstacle(10, 10),
+            StaticRandomObstacle(20, 20),
+            StaticRandomObstacle(100, 100),
+        ]
+
+    def set_player_centered(self):
+        self.player_object.set_position(
+            config.WIDTH / 2 - 8, 20
+        )
+
+    def create_menu(self):
         self.iUi.addMenu(Game.MENU_GAME_OVER, [
             {
-                "rowName": "title",
-                "selectable": False,
-                "font": "MS Comic Sans",
-                "fontSize": 30,
-                "color": (0, 0, 255),
-                "text": "Game Over"
+                'rowName': 'title',
+                'selectable': False,
+                'font': config.FONT_NAME,
+                'fontSize': 30,
+                'color': (235, 64, 52),
+                'text': 'Game Over'
             },
             {
-                "rowName": "restart",
-                "selectable": True,
-                "font": "MS Comic Sans",
-                "fontSize": 30,
-                "color": (0, 0, 255),
-                "text": "Restart"
+                'rowName': 'restart',
+                'selectable': True,
+                'font': config.FONT_NAME,
+                'fontSize': 20,
+                'color': (0, 0, 255),
+                'text': 'Restart',
+                'action': self.menu_action_restart
+            },
+            {
+                'rowName': 'exit',
+                'selectable': True,
+                'font': config.FONT_NAME,
+                'fontSize': 20,
+                'color': (0, 0, 255),
+                'text': 'EXIT',
+                'action': self.menu_action_exit
             },
         ])
+
+    def process_menu_action(self, menu_item):
+        pass
+
+    def menu_action_restart(self):
+        self.game_over = False
+        self.start_game()
+
+    def menu_action_exit(self):
+        self.game_over = True
+        self.keep_running = False
 
     def process_player_input(self):
         if self.game_over:
@@ -84,19 +129,13 @@ class Game:
         self.all_objects.append(StaticRandomObstacle(x, config.HEIGHT))
 
     def run(self):
-        self.all_objects += [
-            StaticRandomObstacle(0, 0),
-            StaticRandomObstacle(10, 10),
-            StaticRandomObstacle(20, 20),
-            StaticRandomObstacle(100, 100),
-        ]
+        self.start_game()
 
         to_move_cache = 0
 
         # Main loop
-        keep_running = True
-        while keep_running:
-            self.clock.tick(60)
+        while self.keep_running:
+            self.clock.tick(config.MAX_FPS)
             self.spawn_objects()
 
             to_move_delta = to_move_cache + (self.speed / self.clock.get_time())
@@ -105,7 +144,7 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    keep_running = False
+                    self.menu_action_exit()
                 elif event.type == pygame.VIDEORESIZE:
                     self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
@@ -117,12 +156,9 @@ class Game:
                         # print("no UI catch, key pressed:", event.key)
                         if pygame.K_RETURN == event.key:
                             selected_menu_item = self.iUi.getSelectedItem()
-                            if selected_menu_item is not None and selected_menu_item['rowName'] == "restart":
-                                self.game_over = False
-                                self.speed = 1
-                                self.all_objects = [self.player_object]
-
-                            # print("selected item:", self.iUi.getSelectedItem())
+                            if selected_menu_item is not None and 'action' in selected_menu_item:
+                                selected_menu_item['action']()
+                                self.iUi.hideMenu()
 
             self.__current_frame_keys_down = pygame.key.get_pressed()
             self.process_player_input()
