@@ -265,5 +265,6 @@ pyrightconfig.json
 
 # my
 
+venvs/
 images_raw/
 config_local.py
