@@ -133,10 +133,16 @@ class Game:
         x = random.randint(0, config.WIDTH - 16)
         self.all_objects.append(StaticRandomObstacle(x, config.HEIGHT))
 
-    def draw_distance_ui(self):
+    def draw_ui(self):
         font = pygame.font.Font(config.FONT_NAME, 16)
-        text = font.render("Distance: " + str(self.distance_traveled), config.ANTI_ALIAS, (100, 100, 100))
+        text = font.render('Distance: ' + str(self.distance_traveled), config.ANTI_ALIAS, (100, 100, 100))
         self.original_surface.blit(text, (0, 0))
+
+        font = pygame.font.Font(config.FONT_NAME, 8)
+        fps_text = 'FPS: ' + str(int(self.clock.get_fps()))
+        text = font.render(fps_text, config.ANTI_ALIAS, (100, 100, 100))
+        _, text_height = font.size(fps_text)
+        self.original_surface.blit(text, (0, config.HEIGHT - text_height))
 
     def move_objects(self, to_move):
         if self.game_over:
@@ -212,7 +218,7 @@ class Game:
             if self.game_over:
                 self.iUi.draw(Game.MENU_GAME_OVER)
 
-            self.draw_distance_ui()
+            self.draw_ui()
 
             # Scale the surface to fit the window size
             scaled_surface = pygame.transform.scale(self.original_surface, self.screen.get_size())
