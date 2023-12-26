@@ -5,6 +5,8 @@ The original first-session code https://github.com/bison--/PySki/tree/original_s
 
 ## start
 
+Tested with Python 3.10  
+
 On Windows, run `start.bat` to start the game.  
 On Linux, run `start.sh` to start the game.
 
