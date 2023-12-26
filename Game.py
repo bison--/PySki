@@ -119,6 +119,9 @@ class Game:
                 self.speed = 1
 
     def spawn_objects(self):
+        if self.game_over:
+            return
+
         lowest_object_position = 0
         for obj in self.all_objects:
             if obj.y > lowest_object_position:
@@ -130,10 +133,36 @@ class Game:
         x = random.randint(0, config.WIDTH - 16)
         self.all_objects.append(StaticRandomObstacle(x, config.HEIGHT))
 
-    def draw_distance(self):
+    def draw_distance_ui(self):
         font = pygame.font.Font(config.FONT_NAME, 16)
         text = font.render("Distance: " + str(self.distance_traveled), config.ANTI_ALIAS, (100, 100, 100))
         self.original_surface.blit(text, (0, 0))
+
+    def move_objects(self, to_move):
+        if self.game_over:
+            return
+
+        for i in range(len(self.all_objects) - 1, -1, -1):
+            obj = self.all_objects[i]
+            if not self.game_over:
+                obj.move_up(to_move)
+
+            if obj.can_be_removed():
+                self.all_objects.pop(i)
+                continue
+
+    def draw_objects(self):
+        for obj in self.all_objects:
+            obj.draw(self.original_surface)
+
+    def check_collisions(self):
+        if self.game_over:
+            return
+
+        for obj in self.all_objects:
+            if obj.check_pixel_collision(self.player_object):
+                self.game_over = True
+                return
 
     def run(self):
         self.start_game()
@@ -143,14 +172,7 @@ class Game:
         # Main loop
         while self.keep_running:
             self.clock.tick(config.MAX_FPS)
-            self.spawn_objects()
-
-            to_move = 0
-            if not self.game_over:
-                to_move_delta = to_move_cache + (self.speed / self.clock.get_time())
-                to_move_cache = to_move_delta % 1
-                to_move = int(to_move_delta)
-                self.distance_traveled += to_move
+            self.original_surface.fill((255, 255, 255))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -175,28 +197,22 @@ class Game:
             self.__current_frame_keys_down = pygame.key.get_pressed()
             self.process_player_input()
 
-            self.original_surface.fill((255, 255, 255))
+            to_move = 0
+            if not self.game_over:
+                to_move_delta = to_move_cache + (self.speed / self.clock.get_time())
+                to_move_cache = to_move_delta % 1
+                to_move = int(to_move_delta)
+                self.distance_traveled += to_move
 
-            for i in range(len(self.all_objects) - 1, -1, -1):
-                obj = self.all_objects[i]
-                if not self.game_over:
-                    obj.move_up(to_move)
-
-                if obj.can_be_removed():
-                    self.all_objects.pop(i)
-                    continue
-
-                obj.draw(self.original_surface)
-
-            for obj in self.all_objects:
-                if obj.check_pixel_collision(self.player_object):
-                    self.game_over = True
-                    break
+            self.spawn_objects()
+            self.move_objects(to_move)
+            self.draw_objects()
+            self.check_collisions()
 
             if self.game_over:
                 self.iUi.draw(Game.MENU_GAME_OVER)
 
-            self.draw_distance()
+            self.draw_distance_ui()
 
             # Scale the surface to fit the window size
             scaled_surface = pygame.transform.scale(self.original_surface, self.screen.get_size())
