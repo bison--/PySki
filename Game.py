@@ -60,6 +60,8 @@ class Game:
         )
 
     def create_menu(self):
+        self.iUi.antialias = config.ANTI_ALIAS
+
         self.iUi.addMenu(Game.MENU_GAME_OVER, [
             {
                 'rowName': 'title',
@@ -129,8 +131,8 @@ class Game:
         self.all_objects.append(StaticRandomObstacle(x, config.HEIGHT))
 
     def draw_distance(self):
-        font = pygame.font.Font(config.FONT_NAME, 12)
-        text = font.render("Distance: " + str(self.distance_traveled), True, (100, 100, 100))
+        font = pygame.font.Font(config.FONT_NAME, 16)
+        text = font.render("Distance: " + str(self.distance_traveled), config.ANTI_ALIAS, (100, 100, 100))
         self.original_surface.blit(text, (0, 0))
 
     def run(self):
@@ -155,14 +157,16 @@ class Game:
                     self.menu_action_exit()
                 elif event.type == pygame.VIDEORESIZE:
                     self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
-
                 elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.game_over = True
+
                     if self.iUi.interaction(event.key):
                         # print("UI catched this key:", event.key)
                         pass
                     else:
                         # print("no UI catch, key pressed:", event.key)
-                        if pygame.K_RETURN == event.key:
+                        if pygame.K_RETURN == event.key or pygame.K_SPACE == event.key or pygame.K_KP_ENTER == event.key:
                             selected_menu_item = self.iUi.getSelectedItem()
                             if selected_menu_item is not None and 'action' in selected_menu_item:
                                 selected_menu_item['action']()

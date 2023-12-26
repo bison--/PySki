@@ -15,6 +15,7 @@ class Ui:
         self.keymap = {pygame.K_UP: 1, pygame.K_RIGHT: 2, pygame.K_DOWN: 3, pygame.K_LEFT: 4}  # pygame.K_RETURN:5}
         self.selectedColor = (245, 101, 44)  # orange ;)
         self.nextAction = None
+        self.antialias = True
 
         self.menus = {}
 
@@ -42,7 +43,7 @@ class Ui:
         return canInteract
 
     def addMenu(self, menuKey, menuRows):
-        """ add an menu
+        """ add a menu
         @menuKey: unique name of the menu
         @menuRows: [
                     {"rowName":"title", "selectable":False, "font":"MS Comic Sans", "fontSize":30, "color":(0,0,255), "text":"UserInterfaceGenerator"},
@@ -86,7 +87,7 @@ class Ui:
 
         indexList = self.__getAvailableIndexes()
         if len(indexList) == 0:
-            print('NO SELECTABLE MENU ITEMS')
+            # print('NO SELECTABLE MENU ITEMS')
             return -1
 
         if self._selectedMenu in self.menus and direction == 0:
@@ -196,7 +197,7 @@ class Ui:
                 if i == self._selectedMenuItemIndex:
                     color = self.selectedColor
 
-                self._screen.blit(fnt.render(txt, 1, color), (xPos - (font_width / 2), yPos))
+                self._screen.blit(fnt.render(txt, self.antialias, color), (xPos - (font_width / 2), yPos))
         else:
             raise Exception("Error menu '" + menuKey + "' does not exist")
 
