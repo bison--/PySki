@@ -177,9 +177,9 @@ class Ui:
             # print fnt.size(resultText)
             menuRowsCount = len(menuToDraw)
             for i in range(menuRowsCount):
-                previous_rows_font_height = self.__getPreviousMenuRowRealFontHeight(menuToDraw, i)
+                previous_row_font_height = self.__getPreviousMenuRowRealFontHeight(menuToDraw, i)
                 xPos = (self._screen.get_width() / 2)
-                yPos += previous_rows_font_height
+                yPos += previous_row_font_height
 
                 fontSize = menuToDraw[i]["fontSize"]
                 fnt = self.tryLoadFont(menuToDraw[i]["font"], fontSize)
