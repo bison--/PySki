@@ -19,7 +19,7 @@ class Ui:
         self.menus = {}
 
         self._selectedMenu = ''  # menu 'name'
-        self._selectedMenuItem = ''  # selected index
+        self._selectedMenuItem = None  # selected item row
         self._selectedMenuItemIndex = -1  # selected index
 
     def interaction(self, eventKey):
@@ -155,6 +155,11 @@ class Ui:
                 return self.__getMenuRowRealFontSizes(menuRows[i - 1])[1]
 
         return 0
+
+    def hideMenu(self):
+        self._selectedMenu = ''
+        self._selectedMenuItem = None
+        self._selectedMenuItemIndex = -1
 
     def draw(self, menuKey=''):
         if menuKey in self.menus:
