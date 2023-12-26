@@ -1,10 +1,10 @@
-import pygame
+import os
 from objects.BaseObject import BaseObject
 
 
 class Player(BaseObject):
     def __init__(self, x, y):
-        super().__init__(x, y, r'images\skier.png')
+        super().__init__(x, y, os.path.join('images', 'skier.png'))
         # TODO: load more frames
 
     def move_up(self, y):

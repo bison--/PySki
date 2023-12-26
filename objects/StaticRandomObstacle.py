@@ -1,4 +1,4 @@
-import pygame
+import os
 import random
 from objects.BaseObject import BaseObject
 
@@ -6,8 +6,8 @@ from objects.BaseObject import BaseObject
 class StaticRandomObstacle(BaseObject):
     def __init__(self, x, y):
         sprites = [
-            r'images\pine_trees.png',  # tree
-            r'images\rocks.png',  # rock
+            os.path.join('images', 'pine_trees.png'),
+            os.path.join('images', 'rocks.png'),
         ]
 
         random_sprites = random.choices(
