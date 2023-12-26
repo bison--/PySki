@@ -185,11 +185,9 @@ class Game:
                 obj.draw(self.original_surface)
 
             for obj in self.all_objects:
-                if obj is self.player_object:
-                    continue
-
-                if obj.check_collision(self.player_object.get_rect()):
+                if obj.check_pixel_collision(self.player_object):
                     self.game_over = True
+                    break
 
             if self.game_over:
                 self.iUi.draw(Game.MENU_GAME_OVER)
