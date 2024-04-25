@@ -171,7 +171,6 @@ class Game:
 
             if obj.can_be_removed():
                 self.all_objects.pop(i)
-                continue
 
         new_trail = Trail(self.player_object.x, self.player_object.y)
         self.all_objects.insert(0, new_trail)

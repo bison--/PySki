@@ -189,7 +189,7 @@ class Ui:
             if self._selected_menu == '' and 'main' in self.menus:
                 self._selected_menu = 'main'
         else:
-            raise Exception("Error menu '" + menu_key + "' does not exist and there is no 'main' menu")
+            raise Ui.MenuKeyError(menu_key, "and there is no 'main' menu")
 
         menu_to_draw = self.menus[self._selected_menu]
 
@@ -218,7 +218,13 @@ class Ui:
 
                 self._screen.blit(font.render(txt, self.antialias, color), (x_pos - (font_width / 2), y_pos))
         else:
-            raise Exception("Error menu '" + menu_key + "' does not exist")
+            raise Ui.MenuKeyError(menu_key)
+
+    class MenuKeyError(Exception):
+        def __init__(self, menu_key, additional_message=""):
+            self.menu_key = menu_key
+            # Call the base class constructor with the parameters it needs
+            super().__init__("Error menu '{}' does not exist {}".format(menu_key, additional_message))
 
 
 if __name__ == "__main__":
