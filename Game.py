@@ -2,7 +2,7 @@ import os
 import random
 import pygame
 
-from Ui import Ui
+from objects.Ui import Ui
 from objects.BaseObject import BaseObject
 from objects.StaticRandomObstacle import StaticRandomObstacle
 from objects.StaticObstacle import StaticObstacle
@@ -75,7 +75,7 @@ class Game:
         self.iUi.keymap[pygame.K_SPACE] = Ui.INTERACTION_SELECT
         self.iUi.keymap[pygame.K_KP_ENTER] = Ui.INTERACTION_SELECT
 
-        self.iUi.addMenu(Game.MENU_GAME_OVER, [
+        self.iUi.add_menu(Game.MENU_GAME_OVER, [
             {
                 'rowName': 'title',
                 'selectable': False,
@@ -212,11 +212,11 @@ class Game:
 
                     # UI caught the key
                     if self.iUi.interaction(event.key):
-                        if self.iUi.getInteraction(event.key) == Ui.INTERACTION_SELECT:
-                            selected_menu_item = self.iUi.getSelectedItem()
+                        if self.iUi.get_interaction(event.key) == Ui.INTERACTION_SELECT:
+                            selected_menu_item = self.iUi.get_selected_item()
                             if selected_menu_item is not None and 'action' in selected_menu_item:
                                 selected_menu_item['action']()
-                                self.iUi.hideMenu()
+                                self.iUi.hide_menu()
 
             self.__current_frame_keys_down = pygame.key.get_pressed()
             self.process_player_input()
