@@ -1,6 +1,6 @@
-from typing import Optional
-
+import logging
 import pygame
+import config_loader as conf
 
 
 class BaseObject:
@@ -61,10 +61,10 @@ class BaseObject:
         offset = (int(self.x - other.x), int(self.y - other.y))
 
         # debug
-        # self_rect = self.get_rect()
-        # print(f"Self Position: ({self_rect})")
-        # print(f"Other Position: ({other_rect})")
-        # print(f"Offset: {offset}")
+        self_rect = self.get_rect()
+        logging.debug(f"Self Position: ({self_rect})")
+        logging.debug(f"Other Position: ({other_rect})")
+        logging.debug(f"Offset: {offset}")
 
         # NOTE: overlap() returns NONE if there is no intersection
         #       overlap_mask() returns an object in any case with the intersecting pixels

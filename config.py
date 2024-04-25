@@ -11,3 +11,7 @@ ANTI_ALIAS = False
 
 FONT_NAME = os.path.join('fonts', 'ComicNeue-Bold.ttf')
 
+# Logging settings
+LOG_LEVEL = "INFO"
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
+LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
