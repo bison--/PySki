@@ -103,7 +103,6 @@ class Ui:
         """ select the menu item
             @direction: +1 (down) or -1 (up), 0 for the first selectable item in the current menu
         """
-        # self._selectedIndex
 
         index_list = self.__get_available_indexes()
         if len(index_list) == 0:
