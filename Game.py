@@ -2,7 +2,7 @@ import os
 import random
 import pygame
 
-from objects.Ui import Ui
+from inc.Ui import Ui
 from objects.BaseObject import BaseObject
 from objects.StaticRandomObstacle import StaticRandomObstacle
 from objects.StaticObstacle import StaticObstacle
