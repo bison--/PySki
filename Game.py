@@ -21,7 +21,6 @@ class Game:
         self.distance_traveled = 0
 
         self.all_objects: list[BaseObject] = []
-        self.__current_frame_keys_down = {}
 
         # Initialize pygame
         os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -104,9 +103,6 @@ class Game:
             },
         ])
 
-    def process_menu_action(self, menu_item):
-        pass
-
     def menu_action_restart(self):
         self.game_over = False
         self.start_game()
@@ -119,9 +115,11 @@ class Game:
         if self.game_over:
             return
 
-        if self.__current_frame_keys_down[pygame.K_LEFT]:
+        current_frame_keys_down = pygame.key.get_pressed()
+
+        if current_frame_keys_down[pygame.K_LEFT]:
             self.player_object.move_left(1)
-        elif self.__current_frame_keys_down[pygame.K_RIGHT]:
+        elif current_frame_keys_down[pygame.K_RIGHT]:
             self.player_object.move_right(1)
 
         if self.player_object.x < 0:
@@ -129,9 +127,9 @@ class Game:
         elif self.player_object.x > config.WIDTH - self.player_object.width:
             self.player_object.x = config.WIDTH - self.player_object.width
 
-        if self.__current_frame_keys_down[pygame.K_DOWN]:
+        if current_frame_keys_down[pygame.K_DOWN]:
             self.speed += 1
-        elif self.__current_frame_keys_down[pygame.K_UP]:
+        elif current_frame_keys_down[pygame.K_UP]:
             self.speed -= 1
             if self.speed < 1:
                 self.speed = 1
@@ -198,26 +196,7 @@ class Game:
             self.clock.tick(config.MAX_FPS)
             self.original_surface.fill((255, 255, 255))
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.menu_action_exit()
-
-                elif event.type == pygame.VIDEORESIZE:
-                    self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
-
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self.game_over = True
-
-                    # UI caught the key
-                    if self.iUi.interaction(event.key):
-                        if self.iUi.get_interaction(event.key) == Ui.INTERACTION_SELECT:
-                            selected_menu_item = self.iUi.get_selected_item()
-                            if selected_menu_item is not None and 'action' in selected_menu_item:
-                                selected_menu_item['action']()
-                                self.iUi.hide_menu()
-
-            self.__current_frame_keys_down = pygame.key.get_pressed()
+            self.process_events()
             self.process_player_input()
 
             to_move = 0
@@ -244,3 +223,27 @@ class Game:
             pygame.display.flip()
 
         pygame.quit()
+
+    def process_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.menu_action_exit()
+
+            elif event.type == pygame.VIDEORESIZE:
+                self.screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.game_over = True
+
+                # UI caught the key
+                if not self.iUi.interaction(event.key):
+                    continue
+
+                if self.iUi.get_interaction(event.key) != Ui.INTERACTION_SELECT:
+                    continue
+
+                selected_menu_item = self.iUi.get_selected_item()
+                if selected_menu_item is not None and 'action' in selected_menu_item:
+                    selected_menu_item['action']()
+                    self.iUi.hide_menu()

@@ -1,5 +1,6 @@
 import os
 from objects.BaseObject import BaseObject
+from inc.GameExceptions import InvalidSpriteTypeException
 
 
 class StaticObstacle(BaseObject):
@@ -18,6 +19,6 @@ class StaticObstacle(BaseObject):
         elif type(selected_sprite) is str:
             super().__init__(x, y, os.path.join('images', selected_sprite))
         else:
-            raise Exception('Invalid sprite type')
+            raise InvalidSpriteTypeException()
 
         self.kills_player = True
